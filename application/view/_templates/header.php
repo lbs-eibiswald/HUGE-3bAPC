@@ -9,6 +9,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="<?php echo Config::get('URL'); ?>css/style.css" />
     <link rel="stylesheet" href="<?php echo Config::get('URL'); ?>css/chat.css" />
+    <link rel="stylesheet" href="<?php echo Config::get('URL'); ?>css/gallery.css" />
     
 </head>
 <body>
@@ -35,6 +36,9 @@
                 </li>
                 <li <?php if (View::checkForActiveController($filename, "chat")) { echo ' class="active" '; } ?> >
                     <a href="<?php echo Config::get('URL'); ?>chat/index">Chats</a>
+                </li>
+                <li <?php if (View::checkForActiveController($filename, "gallery")) { echo ' class="active" '; } ?> >
+                    <a href="<?php echo Config::get('URL'); ?>gallery/index">Gallery</a>
                 </li>
             <?php } else { ?>
                 <!-- for not logged in users -->
