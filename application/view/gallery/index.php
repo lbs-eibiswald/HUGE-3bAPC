@@ -15,7 +15,6 @@
 
         <div class="gallery-container">
             <?php
-
                 $targetDirectory = dirname(dirname(dirname(__DIR__))) . '/fileUploads/' . Session::get('user_id') . '/';
                 $images = glob($targetDirectory . '*.{jpg,jpeg,png,webpb,svg}', GLOB_BRACE);
 
@@ -23,27 +22,34 @@
                     foreach($images as $image) {
                         $filename = basename($image);
                         $imageURL = Config::get('URL') . 'gallery/showImage/' . urlencode($filename);
+            ?>
+            
+            <div class="gallery-item">
+                <a href="<?php echo $imageURL; ?>" target="_blank">
+                    <img src="<?php echo $imageURL; ?>" alt="Gallery Image" />
+                </a>
 
-                        echo '<div class="gallery-item">';
-                        echo '<a href="'. $imageURL .'" target="_blank">';
-                        echo '<img src="'. $imageURL .'" alt="Gallery Image" />';
-                        echo '</a>';
+                <div class="image-info">
+                    <div class="image-actions">
+                        <form action="<?php echo Config::get('URL'); ?>gallery/downloadImage" method="post">
+                            <input type="hidden" name="filename" value="<?php echo $filename; ?>">
+                            <button type="submit">Download Image</button>
+                        </form>
 
-                        echo '<div class="image-info">';
-                        echo '<br>';
+                        <form action="<?php echo Config::get('URL'); ?>gallery/deleteImage" method="post">
+                            <input type="hidden" name="filename" value="<?php echo $filename; ?>">
+                            <button type="submit">Delete Image</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-                        // echo '<p>Description</p>';
-                        
-                        echo '<button>Delete Image</button>';
-                        echo '<button>Download Image</button>';
-                        echo '</div>';
-                        echo '</div>';
+            <?php
                     }
                 } else {
                     echo 'No images';
                 }
             ?>
         </div>
-
     </div>
 </div>

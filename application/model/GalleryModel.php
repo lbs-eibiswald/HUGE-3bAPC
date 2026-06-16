@@ -58,4 +58,46 @@ class GalleryModel {
         Session::add('feedback_negative', 'Something went wrong when saving into the database');
         return false;
     }
+
+    /**
+     * Download Image
+     * @param string $filename
+     * @param string $filePath
+     * @return bool
+     */
+    public static function downloadImage(string $filename, string $filePath) {
+        $fileinfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime = $fileinfo->file($filePath);
+
+        header('Content-Type: ' . $mime);
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Length: ' . filesize($filePath));
+
+        readfile($filePath);
+
+        if (!self::changeDownloadState($filename)) {
+            Session::add('feedback_negative', 'Something went wrong when downloading and updating image details, Please try again later');
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Increase 'downloads' of the file with filename +1 if image is downloaded
+     * @param string $filename
+     * @return bool
+     */
+    public static function changeDownloadState(string $filename) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "UPDATE gallery SET downloads = downloads + 1 WHERE name = :filename LIMIT 1;";
+
+        $query = $database->prepare($sql);
+        $query->execute(array(
+            ':filename' => $filename,
+        ));
+
+        return true;
+    }
 }

@@ -33,7 +33,6 @@ class GalleryController extends Controller
 
         GalleryModel::uploadImage($userID);
         Redirect::to('gallery/index');
-
     }
 
     /**
@@ -53,6 +52,23 @@ class GalleryController extends Controller
         } else {
             header("HTTP/1.0 404 Not Found");
             echo "Image not found or access denied.";
+        }
+    }
+
+    public function downloadImage() {
+        $userID = (int) Session::get('user_id');
+        $filename = Request::post('filename');
+
+        $cleanFilename = basename(urldecode($filename));
+        $filePath = dirname(dirname(__DIR__)) . '/fileUploads/' . $userID . '/' . $cleanFilename;
+
+        if (file_exists($filePath)) {
+            if (GalleryModel::downloadImage($cleanFilename, $filePath)) {
+                Session::add('feedback_positive', 'File successfully downloaded.');
+            }
+        } else {
+            Session::add('feedback_negative', 'Image not found or access denied.');
+            return;
         }
     }
 
