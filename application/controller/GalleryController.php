@@ -31,8 +31,10 @@ class GalleryController extends Controller
             return;
         }
 
-        GalleryModel::uploadImage($userID);
-        Redirect::to('gallery/index');
+        if (GalleryModel::uploadImage($userID)) {
+            Session::add('feedback_positive', 'Successfully uploaded file.');
+            Redirect::to('gallery/index');
+        }
     }
 
     /**
