@@ -100,4 +100,18 @@ class GalleryModel {
 
         return true;
     }
+
+    public static function deleteImage(string $filename, string $filePath) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+        
+        if (!unlink($filePath)) return false;
+
+        $sql = "DELETE FROM gallery WHERE name = :filename LIMIT 1;";
+        $query = $database->prepare($sql);
+        $query->execute(array(
+            ':filename' => $filename,
+        ));
+
+        return true;
+    }
 }

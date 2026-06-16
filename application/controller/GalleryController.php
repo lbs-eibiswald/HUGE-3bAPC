@@ -65,6 +65,24 @@ class GalleryController extends Controller
         if (file_exists($filePath)) {
             if (GalleryModel::downloadImage($cleanFilename, $filePath)) {
                 Session::add('feedback_positive', 'File successfully downloaded.');
+                Redirect::to('gallery/index');
+            }
+        } else {
+            Session::add('feedback_negative', 'Image not found or access denied.');
+            return;
+        }
+    }
+    public function deleteImage() {
+        $userID = (int) Session::get('user_id');
+        $filename = Request::post('filename');
+
+        $cleanFilename = basename(urldecode($filename));
+        $filePath = dirname(dirname(__DIR__)) . '/fileUploads/' . $userID . '/' . $cleanFilename;
+
+        if (file_exists($filePath)) {
+            if (GalleryModel::deleteImage($cleanFilename, $filePath)) {
+                Session::add('feedback_positive', 'File successfully deleted.');
+                Redirect::to('gallery/index');
             }
         } else {
             Session::add('feedback_negative', 'Image not found or access denied.');
