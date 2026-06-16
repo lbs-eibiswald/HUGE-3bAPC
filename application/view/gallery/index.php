@@ -24,9 +24,20 @@
                         $filename = basename($image);
                         $imageURL = Config::get('URL') . 'gallery/showImage/' . urlencode($filename);
 
+                        echo '<div class="gallery-item">';
                         echo '<a href="'. $imageURL .'" target="_blank">';
                         echo '<img src="'. $imageURL .'" alt="Gallery Image" />';
                         echo '</a>';
+
+                        echo '<div class="image-info">';
+                        echo '<br>';
+
+                        // echo '<p>Description</p>';
+                        
+                        echo '<button>Delete Image</button>';
+                        echo '<button>Download Image</button>';
+                        echo '</div>';
+                        echo '</div>';
                     }
                 } else {
                     echo 'No images';

@@ -37,7 +37,9 @@ class GalleryController extends Controller
     }
 
     /**
-     * Securely serves an image, ensuring only the correct user can access it.
+     * Displays an image in a new tab, ensuring only the current user can access it
+     * @param mixed $filename
+     * @return void
      */
     public function showImage($filename) {
         $userID = (int) Session::get('user_id');
