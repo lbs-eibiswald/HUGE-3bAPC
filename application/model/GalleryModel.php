@@ -114,4 +114,13 @@ class GalleryModel {
 
         return true;
     }
+    public static function getImageDownloadCount(int $userID) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "SELECT name, downloads FROM gallery WHERE owner = :owner;";
+        $query = $database->prepare($sql);
+        $query->execute(array(':owner' => $userID));
+
+        return $query->fetchAll();
+    }
 }

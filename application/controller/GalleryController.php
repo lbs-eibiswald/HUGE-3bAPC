@@ -16,7 +16,11 @@ class GalleryController extends Controller
      * Shows a list of all users.
      */
     public function index() {
-        $this->View->render('gallery/index');
+        $userID = (int) Session::get('user_id');
+
+        $this->View->render('gallery/index', array(
+            'images' => GalleryModel::getImageDownloadCount($userID)
+        ));
     }
 
     /**
@@ -91,5 +95,4 @@ class GalleryController extends Controller
             return;
         }
     }
-
 }

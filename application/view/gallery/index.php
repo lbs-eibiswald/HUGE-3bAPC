@@ -15,15 +15,12 @@
 
         <div class="gallery-container">
             <?php
-                $targetDirectory = dirname(dirname(dirname(__DIR__))) . '/fileUploads/' . Session::get('user_id') . '/';
-                $images = glob($targetDirectory . '*.{jpg,jpeg,png,webpb,svg}', GLOB_BRACE);
-
-                if ($images) {
-                    foreach($images as $image) {
-                        $filename = basename($image);
+                if (!empty($this->images)) {
+                    foreach($this->images as $image) {
+                        $filename = $image->name;
                         $imageURL = Config::get('URL') . 'gallery/showImage/' . urlencode($filename);
             ?>
-            
+
             <div class="gallery-item">
                 <a href="<?php echo $imageURL; ?>" target="_blank">
                     <img src="<?php echo $imageURL; ?>" alt="Gallery Image" />
@@ -40,6 +37,8 @@
                             <input type="hidden" name="filename" value="<?php echo $filename; ?>">
                             <button type="submit">Delete Image</button>
                         </form>
+
+                        <p>Downloads: <?php echo $image->downloads; ?></p>
                     </div>
                 </div>
             </div>
