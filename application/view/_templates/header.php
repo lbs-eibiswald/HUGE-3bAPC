@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="<?php echo Config::get('URL'); ?>css/style.css" />
     <link rel="stylesheet" href="<?php echo Config::get('URL'); ?>css/chat.css" />
     <link rel="stylesheet" href="<?php echo Config::get('URL'); ?>css/gallery.css" />
+    <link rel="stylesheet" href="<?php echo Config::get('URL'); ?>css/shop.css" />
     
 </head>
 <body>
@@ -39,6 +40,9 @@
                 </li>
                 <li <?php if (View::checkForActiveController($filename, "gallery")) { echo ' class="active" '; } ?> >
                     <a href="<?php echo Config::get('URL'); ?>gallery/index">Gallery</a>
+                </li>
+                <li <?php if (View::checkForActiveController($filename, "shop")) { echo ' class="active" '; } ?> >
+                    <a href="<?php echo Config::get('URL'); ?>shop/index">Shop</a>
                 </li>
             <?php } else { ?>
                 <!-- for not logged in users -->
