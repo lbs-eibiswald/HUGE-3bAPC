@@ -21,7 +21,7 @@
 
             <!-- CREATE NEW PRODUCT -->
             <div class="create-product" id="create-product-container">
-                <form action="<?php echo Config::get('URL'); ?>shop/createNewProduct" method="post">
+                <form action="<?php echo Config::get('URL'); ?>shop/createNewProduct" method="post" enctype="multipart/form-data">
                     <br>
                     <label>Product Name:</label>
                     <input type="text" name="productName" placeholder="Enter product name">
@@ -29,6 +29,12 @@
                     <br><br>
                     <label>Product Description:</label>
                     <textarea type="text" name="productDescription" placeholder="Enter product description"></textarea>
+
+                    <br><br><br>
+                    <label>Select multiple product images</label>
+                    <input type="file" name="fileUpload[]" id="fileUpload" multiple="multiple" accept=".png, .jpg, .jpeg, .webpb, .svg">
+                    <!-- <input type="submit" value="Upload Image" name="submit"> -->
+                    <br>
 
                     <br><br>
                     <label>Category:</label>

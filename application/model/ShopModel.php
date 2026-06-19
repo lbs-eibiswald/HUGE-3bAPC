@@ -1,6 +1,8 @@
 <?php
 
 class ShopModel {
+
+    // ===== CATEGORY =====
     public static function createCategoryEntry(string $categoryName) {
         $database = DatabaseFactory::getFactory()->getConnection();
 
@@ -25,6 +27,7 @@ class ShopModel {
         return $query->fetchAll();
     }
 
+    // ===== PRODUCT =====
     public static function createProductEntry($productName, $productDescription, $categoryID, $productInventoryAmount) {
         $database = DatabaseFactory::getFactory()->getConnection();
 
@@ -38,8 +41,79 @@ class ShopModel {
             ':amount' => $productInventoryAmount
         ));
 
-        if ($result) return true;
-        
-        return false;
+        if ($result) {
+            return $database->lastInsertId();
+        };
+        return -1;
+    }
+
+    /**
+     * Verify if the file meets every requirenment
+     * @return boolean if the file is allowed to upload or not.
+     */
+    public static function verifyFileUpload() {
+        $allowedFileTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/svg'];
+        $maxFileSize = 5 * 1024 * 1024;
+
+        if(!empty(array_filter($_FILES['fileUpload']['name']))) {
+
+            // loop through every file to perform the checks
+            foreach ($_FILES['fileUpload']['tmp_name'] as $key => $value) {
+                $fileTempName = $_FILES['fileUpload']['tmp_name'][$key];
+                $fileName = $_FILES['fileUpload']['name'][$key];
+                $fileSize = $_FILES['fileUpload']['size'][$key];
+
+                $fileInfo = new finfo(FILEINFO_MIME_TYPE);
+                $mime = $fileInfo->file($fileTempName);
+
+                if(in_array($mime, $allowedFileTypes)) {
+                    if ($fileSize > $maxFileSize) {
+                        Session::add('feedback_negative', 'Error verifying file: The file {$fileName} is too large. Maximum size is: {$maxFileSize}');
+                        return false;
+                    }
+                }
+                else {
+                    // If file extension not valid
+                    Session::add('feedback_negative', 'Error verifying file: The file {$fileName} is not valid.');
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public static function uploadImage(int $productID) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        if(!empty(array_filter($_FILES['fileUpload']['name']))) {
+
+            // loop through every file to perform the checks
+            foreach ($_FILES['fileUpload']['tmp_name'] as $key => $value) {
+                $fileTempName = $_FILES['fileUpload']['tmp_name'][$key];
+                $filename = preg_replace('/[^a-zA-Z0-9. -]/', '_', basename($_FILES['fileUpload']['name'][$key]));
+                $targetDirectory = dirname(dirname(__DIR__)) . '/fileUploads/shopImages/' . $productID . '/';
+                $targetFile = $targetDirectory  . time() . '_' . $filename;
+                $fileSize = $_FILES['fileUpload']['size'][$key];
+
+                if (!file_exists($targetDirectory)) {
+                    mkdir($targetDirectory, 0777, true);
+                }
+
+                move_uploaded_file($fileTempName, $targetFile);
+
+                // Database insertion
+                // Save Image info into database
+                $sql = "INSERT INTO shop_images (name, product_id, size, timestamp)
+                        VALUES (:name, :product_id, :size, NOW())";
+                $query = $database->prepare($sql);
+
+                $query->execute(array(
+                    ':name' => time() . '_' . $filename,
+                    ':product_id' => $productID,
+                    ':size' => $fileSize
+                ));
+            }
+        }
     }
 }

@@ -23,12 +23,14 @@ class ShopController extends Controller {
     public function createNewCategory() {
         $categoryName = (string) Request::post('categoryInput');
 
+        // Check for user Role - Permissions
         if (!Session::get("user_account_type") == 7) {
             Session::add('feedback_negative', 'You don\'t have permissions to create a category');
             Redirect::to('shop/index');
             return;
         }
 
+        // Create new Category
         if (!ShopModel::createCategoryEntry($categoryName)) {
             Session::add('feedback_negative', 'Something wen\'t wrong.');
             Redirect::to('shop/index');
@@ -52,11 +54,22 @@ class ShopController extends Controller {
             return;
         }
 
-        if (!ShopModel::createProductEntry($productName, $productDescription, $categoryID, $productInventoryAmount)) {
+        // Create new Product
+        $productID = (int) ShopModel::createProductEntry($productName, $productDescription, $categoryID, $productInventoryAmount);
+
+        if ($productID == -1) {
             Session::add('feedback_negative', 'Something wen\'t wrong.');
             Redirect::to('shop/index');
             return;
-        } 
+        }
+
+        if (!ShopModel::verifyFileUpload()) {
+            Session::add('feedback_negative', 'Something wen\'t wrong with one image. Please ensure the size is not too high.');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        ShopModel::uploadImage($productID);
 
         Redirect::to('shop/index');
         Session::add('feedback_positive', 'Product successfully created!');
