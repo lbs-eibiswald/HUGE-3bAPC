@@ -11,7 +11,35 @@ class ShopModel {
         ));
 
         if ($result) return true;
-        Session::add('feedback_negative', 'Something wen\'t wrong while saving into the database');
+
+        return false;
+    }
+
+    public static function getAllCategories() {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "SELECT id, name FROM shop_categories;";
+        $query = $database->prepare($sql);
+        $query->execute();
+
+        return $query->fetchAll();
+    }
+
+    public static function createProductEntry($productName, $productDescription, $categoryID, $productInventoryAmount) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "INSERT INTO shop_products (name, description, category, inventory_amount)
+                VALUES (:name, :desc, :categoryID, :amount) LIMIT 1;";
+        $query = $database->prepare($sql);
+        $result = $query->execute(array(
+            ':name' => $productName,
+            ':desc' => $productDescription,
+            ':categoryID' => $categoryID,
+            ':amount' => $productInventoryAmount
+        ));
+
+        if ($result) return true;
+        
         return false;
     }
 }

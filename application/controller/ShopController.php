@@ -15,7 +15,9 @@ class ShopController extends Controller {
      * Shows a list of all users.
      */
     public function index() {
-        $this->View->render('shop/index');
+        $this->View->render('shop/index', array(
+            'categories' => ShopModel::getAllCategories()
+        ));
     }
 
     public function createNewCategory() {
@@ -35,5 +37,28 @@ class ShopController extends Controller {
 
         Redirect::to('shop/index');
         Session::add('feedback_positive', 'Category successfully created!');
+    }
+    
+    public function createNewProduct() {
+        $productName = (string) Request::post('productName');
+        $productDescription  = (string) Request::post('productDescription');
+        $categoryID  = (int) Request::post('categorySelection');
+        $productInventoryAmount  = (int) Request::post('productAmount');
+
+        // Check for user Role - Permissions
+        if (!Session::get("user_account_type") == 7) {
+            Session::add('feedback_negative', 'You don\'t have permissions to create a category');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        if (!ShopModel::createProductEntry($productName, $productDescription, $categoryID, $productInventoryAmount)) {
+            Session::add('feedback_negative', 'Something wen\'t wrong.');
+            Redirect::to('shop/index');
+            return;
+        } 
+
+        Redirect::to('shop/index');
+        Session::add('feedback_positive', 'Product successfully created!');
     }
 }

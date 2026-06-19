@@ -14,15 +14,40 @@
             <div class="create-category" id="create-category-container">
                 <form action="<?php echo Config::get('URL'); ?>shop/createNewCategory" method="post">
                     <label>Category:</label>
-                    <input type="text" name="categoryInput" placeholder="category name">
+                    <input type="text" name="categoryInput" placeholder="Enter category name">
                     <button type="submit">Create category</button>
                 </form>
             </div>
 
             <!-- CREATE NEW PRODUCT -->
             <div class="create-product" id="create-product-container">
-                <p>Create a new product</p>
-                <form></form>
+                <form action="<?php echo Config::get('URL'); ?>shop/createNewProduct" method="post">
+                    <br>
+                    <label>Product Name:</label>
+                    <input type="text" name="productName" placeholder="Enter product name">
+
+                    <br><br>
+                    <label>Product Description:</label>
+                    <textarea type="text" name="productDescription" placeholder="Enter product description"></textarea>
+
+                    <br><br>
+                    <label>Category:</label>
+
+                    <select id="categorySelection" name="categorySelection">
+                        <?php foreach ($this->categories as $category) { ?>
+                            <option value="<?= $category->id; ?>">
+                                <?= $category->name; ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+
+                    <br><br>
+                    <label>Inventory amount</label>
+                    <input type="number" name="productAmount" placeholder="Enter inventory amount">
+
+                    <br><br>
+                    <button type="submit">Create Product</button>
+                </form>
             </div>
 
             <?php endif; ?>
