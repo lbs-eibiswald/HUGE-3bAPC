@@ -58,8 +58,16 @@
 
             <?php endif; ?>
 
+            <div class="shopping-cart">
+                <button onclick="switchVisibility('product-list', 'shopping-cart')">view shopping cart</button>
+            </div>
+
+            <div id="shopping-cart">
+                <p>This is my shopping cart.</p>
+            </div>
+
             <br><br>
-            <div class="product-container">
+            <div class="product-container" id="product-list">
                 <?php foreach ($this->products as $product) { ?>
 
                     <div class="product">
@@ -85,9 +93,26 @@
                             <p class="product-name"><?php echo $product->name; ?></p>
                             <p class="product-description"><?php echo $product->description; ?></p>
                             <p class="product-category"><?php echo $product->category_name; ?></p>
-                            <p class="product-inventory"><?php echo empty($product->inventory_amount) ? "This product is currently unavailable" : $product->inventory_amount; ?></p>
+                            
+                            <?php if(!empty($product->inventory_amount)) { ?>
+                                <p><?php echo $product->inventory_amount; ?></p>
+
+                                <form action="<?php echo Config::get('URL'); ?>shop/addToCart" method="post">
+                                    <input type="hidden" name="productID" value="<?php echo $product->id; ?>">
+
+                                    <select name="productAmount">
+                                        <?php for ($i = 1; $i <= 100; $i++) { ?>
+                                            <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                                        <?php } ?>
+                                    </select>
+                                    
+                                    <button type="submit" class="button">Place into cart</button>
+                                </form>
+                            <?php } else { ?>
+                                <p class="no-inventory-text">This product is currently unavailable</p>
+                            <?php } ?>
+
                         </div>
-                        
                     </div>
                 <?php } ?>
             </div>

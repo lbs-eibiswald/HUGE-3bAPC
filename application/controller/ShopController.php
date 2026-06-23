@@ -76,4 +76,22 @@ class ShopController extends Controller {
         Redirect::to('shop/index');
         Session::add('feedback_positive', 'Product successfully created!');
     }
+
+    public function addToCart() {
+        $userID = (int) Session::get('user_id');
+        $productID = (int) Request::post('productID');
+        $productAmount = (int) Request::post('productAmount');
+
+        if (!ShopModel::checkIfProductExists($productID)) {
+            Session::add('feedback_negative', 'The selected product does not exist. Something wen\'t wrong.');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        ShopModel::addProductToCart($productID, $productAmount);
+
+        Session::add('feedback_positive', 'Product successfully added to cart.');
+        Redirect::to('shop/index');
+        return;
+    }
 }

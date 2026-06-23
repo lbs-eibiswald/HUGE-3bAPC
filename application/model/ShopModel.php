@@ -143,4 +143,32 @@ class ShopModel {
             }
         }
     }
+
+    public static function checkIfProductExists(int $productID) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "SELECT * FROM shop_products WHERE id = :id LIMIT 1;";
+        $query = $database->prepare($sql);
+        $query->execute(array(
+            ':id' => $productID
+        ));
+
+        if (empty($query->fetch())) return false;
+        
+        return true;
+    }
+
+    public static function addProductToCart(int $productID, int $amount) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "INSERT INTO shopping_cart (product_id, product_amount, owner_id)
+                VALUES (:id, :amount, :owner_id);";
+        $query = $database->prepare($sql);
+
+        $query->execute(array(
+            ':id' => $productID,
+            ':amount' => $amount,
+            ':owner_id' => Session::get('user_id')
+        ));
+    }
 }

@@ -2,9 +2,13 @@
     display: none;
 }
 
+#shopping-cart {
+    display: none;
+}
+
 .product {
     display: flex;
-    border: 1px solid red;
+    border: 1px solid black;
     min-width: fit-content;
     gap: 1rem;
     flex-wrap: wrap;
@@ -13,4 +17,8 @@
 .product-image {
     max-height: 256px;
     max-width: 256px;
+}
+
+.no-inventory-text {
+    color: red;
 }
