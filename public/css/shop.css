@@ -3,11 +3,14 @@
 }
 
 .product {
+    display: flex;
     border: 1px solid red;
     min-width: fit-content;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .product-image {
-    max-height: 64px;
-    max-width: 64px;
+    max-height: 256px;
+    max-width: 256px;
 }

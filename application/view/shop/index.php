@@ -58,22 +58,35 @@
 
             <?php endif; ?>
 
+            <br><br>
             <div class="product-container">
                 <?php foreach ($this->products as $product) { ?>
 
                     <div class="product">
-
-                        <?php foreach ($this->productImages as $image) {
-                            if ($image->product_id != $product->id) continue;
-                            $imagePath = Config::get('URL') . 'shopImages/' . $image->product_id . '/' . $image->name;
-                        ?>
-                            <img class="product-image" src="<?php echo $imagePath; ?>">
+                        <?php
+                            $hasImage = false;
+                            foreach ($this->productImages as $image) {
+                                if ($image->product_id != $product->id) continue;
+                                
+                                $hasImage = true;
+                                $imagePath = Config::get('URL') . 'shopImages/' . $image->product_id . '/' . $image->name;
+                            ?>
+                                <div class="image-container">
+                                    <img class="product-image" src="<?php echo $imagePath; ?>">
+                                </div>
+                            <?php }
+                            if (!$hasImage) { ?>
+                                <div class="image-container">
+                                    <img class="product-image" src="<?php echo Config::get('URL'); ?>shopImages/placeholder/placeholder.png">
+                                </div>
                         <?php } ?>
                         
-                        <p class="product-name"><?php echo $product->name; ?></p>
-                        <p class="product-description"><?php echo $product->description; ?></p>
-                        <p class="product-category"><?php echo $product->category_name; ?></p>
-                        <p class="product-inventory"><?php echo empty($product->inventory_amount) ? "This product is currently unavailable" : $product->inventory_amount; ?></p>
+                        <div class="detail-container">
+                            <p class="product-name"><?php echo $product->name; ?></p>
+                            <p class="product-description"><?php echo $product->description; ?></p>
+                            <p class="product-category"><?php echo $product->category_name; ?></p>
+                            <p class="product-inventory"><?php echo empty($product->inventory_amount) ? "This product is currently unavailable" : $product->inventory_amount; ?></p>
+                        </div>
                         
                     </div>
                 <?php } ?>
