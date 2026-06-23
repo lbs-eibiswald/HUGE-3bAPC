@@ -28,6 +28,33 @@ class ShopModel {
     }
 
     // ===== PRODUCT =====
+    public static function getAllProducts() {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "SELECT 
+                    p.*,
+                    c.id AS category_id,
+                    c.name AS category_name
+                FROM shop_products p
+                INNER JOIN shop_categories c
+                    ON p.category = c.id;";
+
+        $query = $database->prepare($sql);
+        $query->execute();
+
+        return $query->fetchAll();
+    }
+
+    public static function getAllProductImages() {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "SELECT id, name, product_id FROM shop_images;";
+        $query = $database->prepare($sql);
+        $query->execute();
+
+        return $query->fetchAll();
+    }
+
     public static function createProductEntry($productName, $productDescription, $categoryID, $productInventoryAmount) {
         $database = DatabaseFactory::getFactory()->getConnection();
 
@@ -92,7 +119,7 @@ class ShopModel {
             foreach ($_FILES['fileUpload']['tmp_name'] as $key => $value) {
                 $fileTempName = $_FILES['fileUpload']['tmp_name'][$key];
                 $filename = preg_replace('/[^a-zA-Z0-9. -]/', '_', basename($_FILES['fileUpload']['name'][$key]));
-                $targetDirectory = dirname(dirname(__DIR__)) . '/fileUploads/shopImages/' . $productID . '/';
+                $targetDirectory = dirname(dirname(__DIR__)) . '/public/shopImages/' . $productID . '/';
                 $targetFile = $targetDirectory  . time() . '_' . $filename;
                 $fileSize = $_FILES['fileUpload']['size'][$key];
 

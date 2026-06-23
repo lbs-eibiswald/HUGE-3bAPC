@@ -57,6 +57,27 @@
             </div>
 
             <?php endif; ?>
+
+            <div class="product-container">
+                <?php foreach ($this->products as $product) { ?>
+
+                    <div class="product">
+
+                        <?php foreach ($this->productImages as $image) {
+                            if ($image->product_id != $product->id) continue;
+                            $imagePath = Config::get('URL') . 'shopImages/' . $image->product_id . '/' . $image->name;
+                        ?>
+                            <img class="product-image" src="<?php echo $imagePath; ?>">
+                        <?php } ?>
+                        
+                        <p class="product-name"><?php echo $product->name; ?></p>
+                        <p class="product-description"><?php echo $product->description; ?></p>
+                        <p class="product-category"><?php echo $product->category_name; ?></p>
+                        <p class="product-inventory"><?php echo empty($product->inventory_amount) ? "This product is currently unavailable" : $product->inventory_amount; ?></p>
+                        
+                    </div>
+                <?php } ?>
+            </div>
         </div>
 
     </div>

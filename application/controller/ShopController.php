@@ -16,7 +16,9 @@ class ShopController extends Controller {
      */
     public function index() {
         $this->View->render('shop/index', array(
-            'categories' => ShopModel::getAllCategories()
+            'categories' => ShopModel::getAllCategories(),
+            'products' => ShopModel::getAllProducts(),
+            'productImages' => ShopModel::getAllProductImages()
         ));
     }
 
