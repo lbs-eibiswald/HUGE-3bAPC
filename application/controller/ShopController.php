@@ -140,4 +140,69 @@ class ShopController extends Controller {
         Redirect::to('shop/index');
         return;
     }
+
+    // ===== CHECKOUT PAGE =====
+    public function checkout() {
+        // restore form data from session
+        $formData = $_SESSION['checkout_form_data'] ?? [];
+        unset($_SESSION['checkout_form_data']);
+
+        $this->View->render('shop/checkout', array(
+            'shoppingCart' => ShopModel::getAllShoppingCartProducts(),
+            'formData'     => $formData
+        ));
+    }
+
+    // ===== PLACE ORDER =====
+    // validate every form, clear cart and decrease product inventory amount
+    public function placeOrder() {
+        $formData = [
+            'firstname'  => (string) Request::post('firstname'),
+            'email'      => (string) Request::post('email'),
+            'address'    => (string) Request::post('address'),
+            'city'       => (string) Request::post('city'),
+            'state'      => (string) Request::post('state'),
+            'zip'        => (string) Request::post('zip'),
+            'cardname'   => (string) Request::post('cardname'),
+            'cardnumber' => (string) Request::post('cardnumber'),
+            'expmonth'   => (string) Request::post('expmonth'),
+            'expyear'    => (string) Request::post('expyear'),
+            'cvv'        => (string) Request::post('cvv'),
+        ];
+
+        // serverside validation of form data
+        $errors = ShopModel::validateCheckoutDetails(
+            $formData['firstname'],
+            $formData['email'],
+            $formData['address'],
+            $formData['city'],
+            $formData['state'],
+            $formData['zip'],
+            $formData['cardname'],
+            $formData['cardnumber'],
+            $formData['expmonth'],
+            $formData['expyear'],
+            $formData['cvv']
+        );
+
+        if (!empty($errors)) {
+            // if errors, save form data, return to checkout and show errors
+            $_SESSION['checkout_form_data'] = $formData;
+            foreach ($errors as $error) Session::add('feedback_negative', $error);
+
+            Redirect::to('shop/checkout');
+            return;
+        }
+
+        // Clear Cart and decrease product inventory amount
+        if (!ShopModel::handleAffectedProducts()) {
+            Session::add('feedback_negative', 'Something wen\'t wrong while accessing the affected products. Please try again later.');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        // successfully placed order.
+        Session::add('feedback_positive', 'Order placed successfully! Your will receive an verification and your invoice via email.');
+        Redirect::to('shop/index');
+    }
 }

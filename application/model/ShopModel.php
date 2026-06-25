@@ -265,4 +265,113 @@ class ShopModel {
 
         return $query->fetchAll();
     }
+
+    /**
+     * Validates billing address and payment details from the checkout form.
+     * @return array List of error messages; empty array means everything is valid.
+     */
+    public static function validateCheckoutDetails(
+        string $firstname,
+        string $email,
+        string $address,
+        string $city,
+        string $state,
+        string $zip,
+        string $cardname,
+        string $cardnumber,
+        string $expmonth,
+        string $expyear,
+        string $cvv
+    ): array {
+        $errors = [];
+
+        // Billing Address
+        if (empty(trim($firstname))) {
+            $errors[] = 'Full name is required.';
+        }
+
+        if (empty(trim($email)) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'A valid email address is required.';
+        }
+
+        if (empty(trim($address))) {
+            $errors[] = 'Address is required.';
+        }
+
+        if (empty(trim($city))) {
+            $errors[] = 'City is required.';
+        }
+
+        if (empty(trim($state))) {
+            $errors[] = 'State is required.';
+        }
+
+        if (!preg_match('/^\d{4,5}$/', trim($zip))) {
+            $errors[] = 'Zip code must be 4 or 5 digits.';
+        }
+
+        // Payment
+        if (empty(trim($cardname))) {
+            $errors[] = 'Name on card is required.';
+        }
+
+        $digitsOnly = preg_replace('/\s+/', '', $cardnumber);
+        if (!preg_match('/^\d{16}$/', $digitsOnly)) {
+            $errors[] = 'Credit card number must be exactly 16 digits.';
+        }
+
+        $validMonths = [
+            'january','february','march','april','may','june',
+            'july','august','september','october','november','december'
+        ];
+        $monthInput = strtolower(trim($expmonth));
+        $monthIsNumber = ctype_digit($monthInput) && (int)$monthInput >= 1 && (int)$monthInput <= 12;
+        $monthIsName   = in_array($monthInput, $validMonths);
+        if (!$monthIsNumber && !$monthIsName) {
+            $errors[] = 'Expiry month must be a valid month name or number (1–12).';
+        }
+
+        $currentYear = (int) date('Y');
+        if (!ctype_digit(trim($expyear)) || (int)$expyear < $currentYear) {
+            $errors[] = 'Expiry year must be ' . $currentYear . ' or later.';
+        }
+
+        if (!preg_match('/^\d{3,4}$/', trim($cvv))) {
+            $errors[] = 'CVV must be 3 or 4 digits.';
+        }
+
+        return $errors;
+    }
+
+    public static function handleAffectedProducts() {
+        $database = DatabaseFactory::getFactory()->getConnection();
+        $userID = Session::get('user_id');
+        $affectedProducts = self::getAllShoppingCartProducts();
+
+        //decrease inventory amount
+        $sql = "UPDATE shop_products SET inventory_amount = inventory_amount - :amount WHERE id = :product_id LIMIT 1;";
+        $query = $database->prepare($sql);
+
+        foreach ($affectedProducts as $product) {
+            $res = $query->execute(array(
+                ':amount' => $product->product_amount,
+                ':product_id' => $product->product_id,
+            ));
+        }
+
+        //delete cart Products
+        $sql = "DELETE FROM shopping_cart WHERE product_id = :product_id AND owner_id = :user_id LIMIT 1;";
+        $query = $database->prepare($sql);
+
+        foreach ($affectedProducts as $product) {
+            $res = $query->execute(array(
+                ':product_id' => $product->product_id,
+                ':user_id' => $userID
+            ));
+        }
+        
+        if (!$res) return false;
+
+        return true;
+    }
 }
