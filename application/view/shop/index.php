@@ -95,19 +95,15 @@
                             <p class="product-category"><?php echo $product->category_name; ?></p>
                             
                             <?php if(!empty($product->inventory_amount)) { ?>
-                                <p><?php echo $product->inventory_amount; ?></p>
+                                <p>Inventory amount: <?php echo $product->inventory_amount; ?></p>
 
                                 <form action="<?php echo Config::get('URL'); ?>shop/addToCart" method="post">
                                     <input type="hidden" name="productID" value="<?php echo $product->id; ?>">
 
-                                    <select name="productAmount">
-                                        <?php for ($i = 1; $i <= 100; $i++) { ?>
-                                            <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                                        <?php } ?>
-                                    </select>
-                                    
+                                    <input type="number" id="productAmountInput" name="productAmount" min="1" max="<?php echo $product->inventory_amount; ?>" value="1">
                                     <button type="submit" class="button">Place into cart</button>
                                 </form>
+
                             <?php } else { ?>
                                 <p class="no-inventory-text">This product is currently unavailable</p>
                             <?php } ?>

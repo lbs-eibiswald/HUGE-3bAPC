@@ -158,6 +158,22 @@ class ShopModel {
         return true;
     }
 
+    public static function checkProductInventoryAmount(int $productID, int $amount) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "SELECT inventory_amount FROM shop_products WHERE id = :id LIMIT 1;";
+        $query = $database->prepare($sql);
+        $query->execute(array(
+            ':id' => $productID
+        ));
+
+        if ($query->fetch() < $amount) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static function addProductToCart(int $productID, int $amount) {
         $database = DatabaseFactory::getFactory()->getConnection();
 

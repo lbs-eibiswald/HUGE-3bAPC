@@ -88,6 +88,12 @@ class ShopController extends Controller {
             return;
         }
 
+        if (!ShopModel::checkProductInventoryAmount($productID, $productAmount)) {
+            Session::add('feedback_negative', 'The inventory amount is not high enough for this action.');
+            Redirect::to('shop/index');
+            return;
+        }
+
         ShopModel::addProductToCart($productID, $productAmount);
 
         Session::add('feedback_positive', 'Product successfully added to cart.');
