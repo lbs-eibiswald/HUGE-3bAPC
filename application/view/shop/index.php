@@ -71,10 +71,12 @@
                 <button class="cart-only" onclick="toggleCheckout()">Checkout</button>
             
                 <?php
-                    // Build a lookup set of product IDs currently in the cart
+                    // Build a lookup set of product IDs and amounts currently in the cart
                     $cartProductIds = [];
+                    $cartAmounts = [];
                     foreach ($this->shoppingCart as $cartItem) {
                         $cartProductIds[$cartItem->product_id] = true;
+                        $cartAmounts[$cartItem->product_id] = $cartItem->product_amount;
                     }
                 ?>
 
@@ -129,6 +131,12 @@
 
                             <!-- cart-only: hidden in shop mode via CSS -->
                             <div class="cart-only">
+                                <form action="<?php echo Config::get('URL'); ?>shop/updateCartAmount" method="post">
+                                    <input type="hidden" name="productID" value="<?php echo $product->id; ?>">
+                                    <input type="number" name="productAmount" value="<?php echo $cartAmounts[$product->id] ?? 1; ?>" min="1" max="<?php echo $product->inventory_amount; ?>">
+                                    <button type="submit" class="button">Update amount</button>
+                                </form>
+
                                 <form action="<?php echo Config::get('URL'); ?>shop/removeFromCart" method="post">
                                     <input type="hidden" name="productID" value="<?php echo $product->id; ?>">
                                     <button type="submit" class="button">Remove from cart</button>
@@ -218,7 +226,7 @@
                                 <!-- <label>
                                 <input type="checkbox" checked="checked" name="sameadr"> Shipping address same as billing
                                 </label> -->
-                                <input type="submit" value="Pay and place order" class="btn">
+                                <input type="submit" value="Place order" class="btn">
                             </form>
                             </div>
                         </div>
@@ -232,7 +240,7 @@
                                 foreach ($this->shoppingCart as $cartItem) {
                                     $fullPrice += $cartItem->price;
                             ?>
-                                <p><?php echo $cartItem->product_amount ?>x <b><?php echo $cartItem->name; ?></b><span class="price">$<?php echo $cartItem->price; ?></span></p>
+                                <p><b><?php echo $cartItem->product_amount ?>x</b> <?php echo $cartItem->name; ?><span class="price">$<?php echo $cartItem->price; ?></span></p>
                                 
 
                             <?php }?>

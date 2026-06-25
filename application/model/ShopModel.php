@@ -212,6 +212,19 @@ class ShopModel {
         ));
     }
 
+    public static function updateCartProductAmount(int $productID, int $amount) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "UPDATE shopping_cart SET product_amount = :amount WHERE product_id = :product_id AND owner_id = :owner_id LIMIT 1;";
+        $query = $database->prepare($sql);
+
+        $query->execute(array(
+            ':amount' => $amount,
+            ':product_id' => $productID,
+            ':owner_id' => Session::get('user_id')
+        ));
+    }
+
     public static function removeProductFromCart(int $productID) {
         $database = DatabaseFactory::getFactory()->getConnection();
 

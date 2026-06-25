@@ -48,8 +48,9 @@
 }
 
 .col-25 {
-    -ms-flex: 25%; /* IE10 */
-    flex: 25%;
+    -ms-flex: 35%; /* IE10 */
+    flex: 35%;
+    min-width: 220px;
 }
 
 .col-50 {
@@ -58,8 +59,8 @@
 }
 
 .col-75 {
-    -ms-flex: 75%; /* IE10 */
-    flex: 75%;
+    -ms-flex: 65%; /* IE10 */
+    flex: 65%;
 }
 
 .col-25,

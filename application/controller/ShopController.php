@@ -103,6 +103,28 @@ class ShopController extends Controller {
         return;
     }
 
+    public function updateCartAmount() {
+        $productID = (int) Request::post('productID');
+        $productAmount = (int) Request::post('productAmount');
+
+        if (!ShopModel::checkIfProductExists($productID)) {
+            Session::add('feedback_negative', 'The selected product does not exist. Something wen\'t wrong.');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        if (!ShopModel::checkProductInventoryAmount($productID, $productAmount)) {
+            Session::add('feedback_negative', 'The inventory amount is not high enough for this action.');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        ShopModel::updateCartProductAmount($productID, $productAmount);
+
+        Session::add('feedback_positive', 'Cart updated successfully.');
+        Redirect::to('shop/index');
+    }
+
     public function removeFromCart() {
         $productID = (int) Request::post('productID');
 
