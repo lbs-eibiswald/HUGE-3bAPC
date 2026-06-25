@@ -2,10 +2,6 @@
     display: none;
 }
 
-#shopping-cart {
-    display: none;
-}
-
 .product {
     display: flex;
     border: 1px solid black;
@@ -22,3 +18,8 @@
 .no-inventory-text {
     color: red;
 }
+
+/* Shop / cart visibility */
+
+.mode-shop .cart-only { display: none; }
+.mode-cart .shop-only { display: none; }
