@@ -63,7 +63,45 @@
             </div>
 
             <div id="shopping-cart">
-                <p>This is my shopping cart.</p>
+                <?php 
+                    if (!empty($this->shoppingCart)) {
+                        foreach ($this->shoppingCart as $product) { ?>
+                            <div class="product">
+                                <?php
+                                    $hasImage = false;
+                                    foreach ($this->productImages as $image) {
+                                        if ($image->product_id != $product->id) continue;
+                                        
+                                        $hasImage = true;
+                                        $imagePath = Config::get('URL') . 'shopImages/' . $image->product_id . '/' . $image->name;
+                                    ?>
+                                        <div class="image-container">
+                                            <img class="product-image" src="<?php echo $imagePath; ?>">
+                                        </div>
+                                    <?php }
+                                    if (!$hasImage) { ?>
+                                        <div class="image-container">
+                                            <img class="product-image" src="<?php echo Config::get('URL'); ?>shopImages/placeholder/placeholder.png">
+                                        </div>
+                                <?php } ?>
+                                
+                                <div class="detail-container">
+                                    <p class="product-name"><?php echo $product->name; ?></p>
+                                    <p class="product-description"><?php echo $product->description; ?></p>
+                                    <p class="product-category"><?php echo $product->category_name; ?></p>
+                                    
+                                    <form action="<?php echo Config::get('URL'); ?>shop/removeFromCart" method="post">
+                                        <input type="hidden" name="productID" value="<?php echo $product->id; ?>">
+                                        <button type="submit" class="button">Remove Item from cart</button>
+                                    </form>
+
+                                </div>
+                            </div>
+                        <?php }
+                    }
+                else { ?>
+                    <p>No products in your shopping cart.</p>
+                <?php }?>
             </div>
 
             <br><br>

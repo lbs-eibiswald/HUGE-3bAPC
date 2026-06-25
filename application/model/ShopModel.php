@@ -187,4 +187,45 @@ class ShopModel {
             ':owner_id' => Session::get('user_id')
         ));
     }
+
+    public static function removeProductFromCart(int $productID) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "DELETE FROM shopping_cart WHERE product_id = :id AND owner_id = :owner_id LIMIT 1;";
+        $query = $database->prepare($sql);
+
+        $query->execute(array(
+            ':id' => $productID,
+            ':owner_id' => Session::get('user_id')
+        ));
+
+        if (!$query) return false;
+
+        return true;
+    }
+
+    // SHOPPING CART
+    public static function getAllShoppingCartProducts() {
+        $database = DatabaseFactory::getFactory()->getConnection();
+        $userID = Session::get('user_id');
+
+        $sql = "SELECT
+                    sc.*,
+                    p.*,
+                    c.id AS category_id,
+                    c.name AS category_name
+                FROM shopping_cart sc
+                INNER JOIN shop_products p
+                    ON sc.product_id = p.id
+                INNER JOIN shop_categories c
+                    ON p.category = c.id
+                WHERE sc.owner_id = :id;";
+        
+        $query = $database->prepare($sql);
+        $query->execute(array(
+            ':id' => $userID
+        ));
+
+        return $query->fetchAll();
+    }
 }

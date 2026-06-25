@@ -18,7 +18,8 @@ class ShopController extends Controller {
         $this->View->render('shop/index', array(
             'categories' => ShopModel::getAllCategories(),
             'products' => ShopModel::getAllProducts(),
-            'productImages' => ShopModel::getAllProductImages()
+            'productImages' => ShopModel::getAllProductImages(),
+            'shoppingCart' => ShopModel::getAllShoppingCartProducts()
         ));
     }
 
@@ -95,6 +96,22 @@ class ShopController extends Controller {
         }
 
         ShopModel::addProductToCart($productID, $productAmount);
+
+        Session::add('feedback_positive', 'Product successfully added to cart.');
+        Redirect::to('shop/index');
+        return;
+    }
+
+    public function removeFromCart() {
+        $productID = (int) Request::post('productID');
+
+        if (!ShopModel::checkIfProductExists($productID)) {
+            Session::add('feedback_negative', 'The selected product does not exist. Something wen\'t wrong.');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        ShopModel::removeProductFromCart($productID);
 
         Session::add('feedback_positive', 'Product successfully added to cart.');
         Redirect::to('shop/index');
