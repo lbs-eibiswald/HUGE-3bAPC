@@ -159,25 +159,25 @@
                                 <div class="col-50">
                                     <h3>Billing Address</h3>
                                     <label for="fname"><i class="fa fa-user"></i> Full Name</label>
-                                    <input type="text" id="fname" name="firstname" placeholder="John M. Doe">
+                                    <input type="text" id="fname" name="firstname" placeholder="John M. Doe" required>
                                     
                                     <label for="email"><i class="fa fa-envelope"></i> Email</label>
-                                    <input type="text" id="email" name="email" placeholder="john@example.com">
+                                    <input type="text" id="email" name="email" placeholder="john@example.com" required>
                                     
                                     <label for="adr"><i class="fa fa-address-card-o"></i> Address</label>
-                                    <input type="text" id="adr" name="address" placeholder="Eibiswald 1">
+                                    <input type="text" id="adr" name="address" placeholder="Eibiswald 1" required>
                                     
                                     <label for="city"><i class="fa fa-institution"></i> City</label>
-                                    <input type="text" id="city" name="city" placeholder="Eibiswald">
+                                    <input type="text" id="city" name="city" placeholder="Eibiswald" required>
 
                                     <div class="row">
                                         <div class="col-50">
                                             <label for="state">State</label>
-                                            <input type="text" id="state" name="state" placeholder="Steiermark">
+                                            <input type="text" id="state" name="state" placeholder="Steiermark" required>
                                         </div>
                                         <div class="col-50">
                                             <label for="zip">Zip</label>
-                                            <input type="text" id="zip" name="zip" placeholder="8552">
+                                            <input type="text" id="zip" name="zip" placeholder="8552" required>
                                         </div>
                                     </div>
                                 </div>
@@ -194,22 +194,22 @@
                                     </div>
 
                                     <label for="cname">Name on Card</label>
-                                    <input type="text" id="cname" name="cardname" placeholder="John More Doe">
+                                    <input type="text" id="cname" name="cardname" placeholder="John More Doe" required>
                                     
                                     <label for="ccnum">Credit card number</label>
-                                    <input type="text" id="ccnum" name="cardnumber" placeholder="1111 2222 3333 4444">
+                                    <input type="text" id="ccnum" name="cardnumber" placeholder="1111 2222 3333 4444" minLength="16" maxLength="16" required>
                                     
                                     <label for="expmonth">Exp Month</label>
-                                    <input type="text" id="expmonth" name="expmonth" placeholder="September">
+                                    <input type="text" id="expmonth" name="expmonth" placeholder="September" required>
                                     
                                     <div class="row">
                                         <div class="col-50">
                                             <label for="expyear">Exp Year</label>
-                                            <input type="text" id="expyear" name="expyear" placeholder="2030">
+                                            <input type="text" id="expyear" name="expyear" minlength="3" placeholder="2030" required>
                                         </div>
                                         <div class="col-50">
                                             <label for="cvv">CVV</label>
-                                            <input type="text" id="cvv" name="cvv" placeholder="123">
+                                            <input type="text" id="cvv" name="cvv" minLength="3" maxLength="3" placeholder="123" required>
                                         </div>
                                     </div>
                                 </div>
@@ -229,11 +229,10 @@
                             <?php 
                                 $fullPrice = (float) 0;
 
-                                foreach ($this->products as $product) {
-                                    if (!isset($cartProductIds[$product->id])) continue;
-                                    $fullPrice += $product->price; 
+                                foreach ($this->shoppingCart as $cartItem) {
+                                    $fullPrice += $cartItem->price;
                             ?>
-                                <p><b><?php echo $product->name; ?></b><span class="price">$<?php echo $product->price; ?></span></p>
+                                <p><?php echo $cartItem->product_amount ?>x <b><?php echo $cartItem->name; ?></b><span class="price">$<?php echo $cartItem->price; ?></span></p>
                                 
 
                             <?php }?>

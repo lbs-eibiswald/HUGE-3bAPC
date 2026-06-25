@@ -180,6 +180,27 @@ class ShopModel {
     public static function addProductToCart(int $productID, int $amount) {
         $database = DatabaseFactory::getFactory()->getConnection();
 
+        // Check if Product already exists in cart, if so: increase amount of $amount
+        $sql = "SELECT * FROM shopping_cart WHERE product_id = :product_id AND owner_id = :owner_id LIMIT 1;";
+        $query = $database->prepare($sql);
+        $query->execute(array(
+            ':product_id' => $productID,
+            ':owner_id' => Session::get('user_id')
+        ));
+
+        if(!empty($query->rowCount())) {
+            $sql = "UPDATE shopping_cart SET product_amount = product_amount + :amount WHERE product_id = :product_id AND owner_id = :owner_id LIMIT 1;";
+            $query = $database->prepare($sql);
+
+            $query->execute(array(
+                ':amount' => $amount,
+                ':product_id' => $productID,
+                ':owner_id' => Session::get('user_id')
+            ));
+            
+            return;
+        }
+
         $sql = "INSERT INTO shopping_cart (product_id, product_amount, owner_id)
                 VALUES (:id, :amount, :owner_id);";
         $query = $database->prepare($sql);
