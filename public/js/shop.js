@@ -18,3 +18,12 @@ function toggleView() {
         document.querySelectorAll('.product').forEach(p => p.style.display = '');
     }
 }
+
+function toggleCheckout() {
+    document.getElementById('view-container').className = 'mode-checkout';
+}
+
+function backToCart() {
+    document.getElementById('view-container').className = 'mode-cart';
+    document.querySelectorAll('.product[data-in-cart="false"]').forEach(p => p.style.display = 'none');
+}

@@ -49,6 +49,7 @@ class ShopController extends Controller {
         $productDescription  = (string) Request::post('productDescription');
         $categoryID  = (int) Request::post('categorySelection');
         $productInventoryAmount  = (int) Request::post('productAmount');
+        $productPrice = (float) str_replace(',', '.', Request::post('productPrice'));
 
         // Check for user Role - Permissions
         if (!Session::get("user_account_type") == 7) {
@@ -58,7 +59,7 @@ class ShopController extends Controller {
         }
 
         // Create new Product
-        $productID = (int) ShopModel::createProductEntry($productName, $productDescription, $categoryID, $productInventoryAmount);
+        $productID = (int) ShopModel::createProductEntry($productName, $productPrice, $productDescription, $categoryID, $productInventoryAmount);
 
         if ($productID == -1) {
             Session::add('feedback_negative', 'Something wen\'t wrong.');

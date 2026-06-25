@@ -7,8 +7,10 @@
 
         <div class="shop-container">
             <?php if (Session::get("user_account_type") == 7) : ?>
-                <button onclick="toggleVisibility('create-category-container')">Create new Category</button>
-                <button onclick="toggleVisibility('create-product-container')">Create new Product</button>
+                <div id="admin-actions">
+                    <button onclick="toggleVisibility('create-category-container')">Create new Category</button>
+                    <button onclick="toggleVisibility('create-product-container')">Create new Product</button>
+                </div>
 
             <!-- CREATE NEW CATEGORY -->
             <div class="create-category" id="create-category-container">
@@ -29,6 +31,10 @@
                     <br><br>
                     <label>Product Description:</label>
                     <textarea type="text" name="productDescription" placeholder="Enter product description"></textarea>
+
+                    <br>
+                    <label>Product Price:</label>
+                    <input type="number" step="0.01" name="productPrice" placeholder="14.99">
 
                     <br><br><br>
                     <label>Select multiple product images</label>
@@ -57,35 +63,43 @@
 
             <?php endif; ?>
 
-            <div class="view-toggle">
-                <button id="btn-toggle-view" onclick="toggleView()">View Shopping Cart</button>
-            </div>
-
-            <?php
-                $cartProductIds = [];
-                foreach ($this->shoppingCart as $cartItem) {
-                    $cartProductIds[$cartItem->product_id] = true;
-                }
-            ?>
-
+            <!-- SHOW PRODUCTS -->
             <div id="view-container" class="mode-shop">
-                <?php foreach ($this->products as $product) {
-                    $inCart = isset($cartProductIds[$product->id]);
+
+                <button id="btn-toggle-view" onclick="toggleView()">View Shopping Cart</button>
+                <button class="cart-only" onclick="toggleCheckout()">Checkout</button>
+            
+                <?php
+                    // Build a lookup set of product IDs currently in the cart
+                    $cartProductIds = [];
+                    foreach ($this->shoppingCart as $cartItem) {
+                        $cartProductIds[$cartItem->product_id] = true;
+                    }
                 ?>
+
+                <?php foreach ($this->products as $product) {
+                    $inCart = isset($cartProductIds[$product->id]); // check if this product is in the cart
+                ?>
+                    <!-- data-in-cart lets JS filter products when switching to cart view -->
                     <div class="product" data-in-cart="<?= $inCart ? 'true' : 'false' ?>">
                         <?php
                             $hasImage = false;
+
                             foreach ($this->productImages as $image) {
                                 if ($image->product_id != $product->id) continue;
+
                                 $hasImage = true;
-                                $imagePath = Config::get('URL') . 'shopImages/' . $image->product_id . '/' . $image->name;
-                                ?>
+                                $imagePath = Config::get('URL') . 'shopImages/' . $image->product_id . '/' . $image->name; ?>
+
                                 <div class="image-container">
                                     <img class="product-image" src="<?php echo $imagePath; ?>">
                                 </div>
+
                                 <?php
                                 break;
                             }
+
+                            // Show placeholder image
                             if (!$hasImage) { ?>
                                 <div class="image-container">
                                     <img class="product-image" src="<?php echo Config::get('URL'); ?>shopImages/placeholder/placeholder.png">
@@ -95,8 +109,10 @@
                         <div class="detail-container">
                             <p class="product-name"><?php echo $product->name; ?></p>
                             <p class="product-description"><?php echo $product->description; ?></p>
-                            <p class="product-category"><?php echo $product->category_name; ?></p>
+                            <p class="product-price">Price: <?php echo $product->price; ?></p>
+                            <p class="product-category">Category: <?php echo $product->category_name; ?></p>
 
+                            <!-- shop-only: hidden in cart mode via CSS -->
                             <div class="shop-only">
                                 <?php if (!empty($product->inventory_amount)) { ?>
                                     <p>Inventory: <?php echo $product->inventory_amount; ?></p>
@@ -110,6 +126,7 @@
                                 <?php } ?>
                             </div>
 
+                            <!-- cart-only: hidden in shop mode via CSS -->
                             <div class="cart-only">
                                 <form action="<?php echo Config::get('URL'); ?>shop/removeFromCart" method="post">
                                     <input type="hidden" name="productID" value="<?php echo $product->id; ?>">
@@ -127,6 +144,90 @@
                 <?php if (empty($this->shoppingCart)) { ?>
                     <p class="cart-only">No products in your shopping cart.</p>
                 <?php } ?>
+
+                <!-- ==== CHECKOUT ==== -->
+                <!-- checkout-only: only visible in checkout mode -->
+                <div class="checkout-only">
+                    <button onclick="backToCart()">Back to Cart</button>
+                    
+                    <div class="row">
+                        <div class="col-75">
+                            <div class="container">
+                            <form>
+                                <div class="row">
+                                <div class="col-50">
+                                    <h3>Billing Address</h3>
+                                    <label for="fname"><i class="fa fa-user"></i> Full Name</label>
+                                    <input type="text" id="fname" name="firstname" placeholder="John M. Doe">
+                                    <label for="email"><i class="fa fa-envelope"></i> Email</label>
+                                    <input type="text" id="email" name="email" placeholder="john@example.com">
+                                    <label for="adr"><i class="fa fa-address-card-o"></i> Address</label>
+                                    <input type="text" id="adr" name="address" placeholder="Eibiswald 1">
+                                    <label for="city"><i class="fa fa-institution"></i> City</label>
+                                    <input type="text" id="city" name="city" placeholder="Eibiswald">
+
+                                    <div class="row">
+                                    <div class="col-50">
+                                        <label for="state">State</label>
+                                        <input type="text" id="state" name="state" placeholder="Steiermark">
+                                    </div>
+                                    <div class="col-50">
+                                        <label for="zip">Zip</label>
+                                        <input type="text" id="zip" name="zip" placeholder="8552">
+                                    </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-50">
+                                    <h3>Payment</h3>
+                                    <label for="fname">Accepted Cards</label>
+                                    <div class="icon-container">
+                                    <i class="fa fa-cc-visa" style="color:navy;"></i>
+                                    <i class="fa fa-cc-amex" style="color:blue;"></i>
+                                    <i class="fa fa-cc-mastercard" style="color:red;"></i>
+                                    <i class="fa fa-cc-discover" style="color:orange;"></i>
+                                    </div>
+                                    <label for="cname">Name on Card</label>
+                                    <input type="text" id="cname" name="cardname" placeholder="John More Doe">
+                                    <label for="ccnum">Credit card number</label>
+                                    <input type="text" id="ccnum" name="cardnumber" placeholder="1111 2222 3333 4444">
+                                    <label for="expmonth">Exp Month</label>
+                                    <input type="text" id="expmonth" name="expmonth" placeholder="September">
+                                    <div class="row">
+                                    <div class="col-50">
+                                        <label for="expyear">Exp Year</label>
+                                        <input type="text" id="expyear" name="expyear" placeholder="2018">
+                                    </div>
+                                    <div class="col-50">
+                                        <label for="cvv">CVV</label>
+                                        <input type="text" id="cvv" name="cvv" placeholder="352">
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                </div>
+                                <!-- <label>
+                                <input type="checkbox" checked="checked" name="sameadr"> Shipping address same as billing
+                                </label> -->
+                                <input type="submit" value="Continue to checkout" class="btn">
+                            </form>
+                            </div>
+                        </div>
+                        <div class="col-25">
+                            <div class="container">
+                            <h4>Cart <span class="price" style="color:black"><i class="fa fa-shopping-cart"></i> <b>4</b></span></h4>
+                            <p><a href="#">Product 1</a> <span class="price">$15</span></p>
+                            <p><a href="#">Product 2</a> <span class="price">$5</span></p>
+                            <p><a href="#">Product 3</a> <span class="price">$8</span></p>
+                            <p><a href="#">Product 4</a> <span class="price">$2</span></p>
+                            <hr>
+                            <p>Total <span class="price" style="color:black"><b>$30</b></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
 

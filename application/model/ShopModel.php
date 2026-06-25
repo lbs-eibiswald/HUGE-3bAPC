@@ -55,17 +55,18 @@ class ShopModel {
         return $query->fetchAll();
     }
 
-    public static function createProductEntry($productName, $productDescription, $categoryID, $productInventoryAmount) {
+    public static function createProductEntry(string $name, float $price, string $description, int $categoryID, int $amount) {
         $database = DatabaseFactory::getFactory()->getConnection();
 
-        $sql = "INSERT INTO shop_products (name, description, category, inventory_amount)
-                VALUES (:name, :desc, :categoryID, :amount) LIMIT 1;";
+        $sql = "INSERT INTO shop_products (name, price, description, category, inventory_amount)
+                VALUES (:name, :price, :desc, :categoryID, :amount) LIMIT 1;";
         $query = $database->prepare($sql);
         $result = $query->execute(array(
-            ':name' => $productName,
-            ':desc' => $productDescription,
+            ':name' => $name,
+            ':price' => $price,
+            ':desc' => $description,
             ':categoryID' => $categoryID,
-            ':amount' => $productInventoryAmount
+            ':amount' => $amount
         ));
 
         if ($result) {
