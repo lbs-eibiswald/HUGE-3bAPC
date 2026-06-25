@@ -168,7 +168,9 @@ class ShopModel {
             ':id' => $productID
         ));
 
-        if ($query->fetch() < $amount) {
+        $row = $query->fetch();
+
+        if (!$row || (int) $row->inventory_amount < $amount) {
             return false;
         }
 

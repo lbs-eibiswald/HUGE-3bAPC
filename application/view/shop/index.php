@@ -26,15 +26,15 @@
                 <form action="<?php echo Config::get('URL'); ?>shop/createNewProduct" method="post" enctype="multipart/form-data">
                     <br>
                     <label>Product Name:</label>
-                    <input type="text" name="productName" placeholder="Enter product name">
+                    <input type="text" name="productName" placeholder="Enter product name" required>
 
                     <br><br>
                     <label>Product Description:</label>
-                    <textarea type="text" name="productDescription" placeholder="Enter product description"></textarea>
+                    <textarea type="text" name="productDescription" placeholder="Enter product description" required></textarea>
 
                     <br>
                     <label>Product Price:</label>
-                    <input type="number" step="0.01" name="productPrice" placeholder="14.99">
+                    <input type="number" step="0.01" name="productPrice" placeholder="14.99" required>
 
                     <br><br><br>
                     <label>Select multiple product images</label>
@@ -44,7 +44,7 @@
                     <br><br>
                     <label>Category:</label>
 
-                    <select id="categorySelection" name="categorySelection">
+                    <select id="categorySelection" name="categorySelection" required>
                         <?php foreach ($this->categories as $category) { ?>
                             <option value="<?= $category->id; ?>">
                                 <?= $category->name; ?>
@@ -55,6 +55,7 @@
                     <br><br>
                     <label>Inventory amount</label>
                     <input type="number" name="productAmount" placeholder="Enter inventory amount">
+                    <p class="hint">Warning: If you don't enter an amount, the product will not be available.</p>
 
                     <br><br>
                     <button type="submit">Create Product</button>
@@ -159,49 +160,57 @@
                                     <h3>Billing Address</h3>
                                     <label for="fname"><i class="fa fa-user"></i> Full Name</label>
                                     <input type="text" id="fname" name="firstname" placeholder="John M. Doe">
+                                    
                                     <label for="email"><i class="fa fa-envelope"></i> Email</label>
                                     <input type="text" id="email" name="email" placeholder="john@example.com">
+                                    
                                     <label for="adr"><i class="fa fa-address-card-o"></i> Address</label>
                                     <input type="text" id="adr" name="address" placeholder="Eibiswald 1">
+                                    
                                     <label for="city"><i class="fa fa-institution"></i> City</label>
                                     <input type="text" id="city" name="city" placeholder="Eibiswald">
 
                                     <div class="row">
-                                    <div class="col-50">
-                                        <label for="state">State</label>
-                                        <input type="text" id="state" name="state" placeholder="Steiermark">
-                                    </div>
-                                    <div class="col-50">
-                                        <label for="zip">Zip</label>
-                                        <input type="text" id="zip" name="zip" placeholder="8552">
-                                    </div>
+                                        <div class="col-50">
+                                            <label for="state">State</label>
+                                            <input type="text" id="state" name="state" placeholder="Steiermark">
+                                        </div>
+                                        <div class="col-50">
+                                            <label for="zip">Zip</label>
+                                            <input type="text" id="zip" name="zip" placeholder="8552">
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="col-50">
                                     <h3>Payment</h3>
                                     <label for="fname">Accepted Cards</label>
+
                                     <div class="icon-container">
-                                    <i class="fa fa-cc-visa" style="color:navy;"></i>
-                                    <i class="fa fa-cc-amex" style="color:blue;"></i>
-                                    <i class="fa fa-cc-mastercard" style="color:red;"></i>
-                                    <i class="fa fa-cc-discover" style="color:orange;"></i>
+                                        <i class="fa fa-cc-visa" style="color:navy;"></i>
+                                        <i class="fa fa-cc-amex" style="color:blue;"></i>
+                                        <i class="fa fa-cc-mastercard" style="color:red;"></i>
+                                        <i class="fa fa-cc-discover" style="color:orange;"></i>
                                     </div>
+
                                     <label for="cname">Name on Card</label>
                                     <input type="text" id="cname" name="cardname" placeholder="John More Doe">
+                                    
                                     <label for="ccnum">Credit card number</label>
                                     <input type="text" id="ccnum" name="cardnumber" placeholder="1111 2222 3333 4444">
+                                    
                                     <label for="expmonth">Exp Month</label>
                                     <input type="text" id="expmonth" name="expmonth" placeholder="September">
+                                    
                                     <div class="row">
-                                    <div class="col-50">
-                                        <label for="expyear">Exp Year</label>
-                                        <input type="text" id="expyear" name="expyear" placeholder="2018">
-                                    </div>
-                                    <div class="col-50">
-                                        <label for="cvv">CVV</label>
-                                        <input type="text" id="cvv" name="cvv" placeholder="352">
-                                    </div>
+                                        <div class="col-50">
+                                            <label for="expyear">Exp Year</label>
+                                            <input type="text" id="expyear" name="expyear" placeholder="2030">
+                                        </div>
+                                        <div class="col-50">
+                                            <label for="cvv">CVV</label>
+                                            <input type="text" id="cvv" name="cvv" placeholder="123">
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -209,19 +218,29 @@
                                 <!-- <label>
                                 <input type="checkbox" checked="checked" name="sameadr"> Shipping address same as billing
                                 </label> -->
-                                <input type="submit" value="Continue to checkout" class="btn">
+                                <input type="submit" value="Pay and place order" class="btn">
                             </form>
                             </div>
                         </div>
                         <div class="col-25">
                             <div class="container">
-                            <h4>Cart <span class="price" style="color:black"><i class="fa fa-shopping-cart"></i> <b>4</b></span></h4>
-                            <p><a href="#">Product 1</a> <span class="price">$15</span></p>
-                            <p><a href="#">Product 2</a> <span class="price">$5</span></p>
-                            <p><a href="#">Product 3</a> <span class="price">$8</span></p>
-                            <p><a href="#">Product 4</a> <span class="price">$2</span></p>
+                            <h4>Cart <span class="price" style="color:black"><i class="fa fa-shopping-cart"></i> <b><?php echo count($this->shoppingCart) ?></b></span></h4>
+
+                            <?php 
+                                $fullPrice = (float) 0;
+
+                                foreach ($this->products as $product) {
+                                    if (!isset($cartProductIds[$product->id])) continue;
+                                    $fullPrice += $product->price; 
+                            ?>
+                                <p><b><?php echo $product->name; ?></b><span class="price">$<?php echo $product->price; ?></span></p>
+                                
+
+                            <?php }?>
                             <hr>
-                            <p>Total <span class="price" style="color:black"><b>$30</b></span></p>
+                            <p>Total <span class="price" style="color:black"><b>
+                                $<?php echo $fullPrice; ?>
+                            </b></span></p>
                             </div>
                         </div>
                     </div>
