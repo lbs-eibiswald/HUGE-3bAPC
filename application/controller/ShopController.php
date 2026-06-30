@@ -117,6 +117,26 @@ class ShopController extends Controller {
         Redirect::to('shop/index');
     }
 
+    public function deleteProductImage() {
+        if (Session::get("user_account_type") != 7) {
+            Session::add('feedback_negative', 'You don\'t have permissions to delete images.');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        $imageID   = (int) Request::post('imageID');
+        $productID = (int) Request::post('productID');
+
+        if (!ShopModel::deleteProductImage($imageID, $productID)) {
+            Session::add('feedback_negative', 'Could not delete the image.');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        Session::add('feedback_positive', 'Image deleted successfully.');
+        Redirect::to('shop/index');
+    }
+
     public function addToCart() {
         $userID = (int) Session::get('user_id');
         $productID = (int) Request::post('productID');

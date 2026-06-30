@@ -25,7 +25,9 @@
             <div class="create-product" id="create-product-container">
                 <form action="<?php echo Config::get('URL'); ?>shop/createNewProduct" method="post" enctype="multipart/form-data"
                       data-create-url="<?php echo Config::get('URL'); ?>shop/createNewProduct"
-                      data-edit-url="<?php echo Config::get('URL'); ?>shop/updateProduct">
+                      data-edit-url="<?php echo Config::get('URL'); ?>shop/updateProduct"
+                      data-image-base-url="<?php echo Config::get('URL'); ?>shopImages/"
+                      data-delete-image-url="<?php echo Config::get('URL'); ?>shop/deleteProductImage">
                     <input type="hidden" name="productID" id="edit-product-id" value="">
                     <br>
                     <label>Product Name:</label>
@@ -59,6 +61,13 @@
                     <label>Inventory amount</label>
                     <input type="number" name="productAmount" placeholder="Enter inventory amount">
                     <p class="hint">Warning: If you don't enter an amount, the product will not be available.</p>
+
+                    <div id="existing-images-section" style="display:none;">
+                        <br>
+                        <label>Existing Images:</label>
+                        <div id="existing-images-list"></div>
+                        <br>
+                    </div>
 
                     <br><br>
                     <button type="submit">Create Product</button>
@@ -118,7 +127,12 @@
                             <p class="product-price">Price: <?php echo $product->price; ?></p>
                             <p class="product-category">Category: <?php echo $product->category_name; ?></p>
 
-                            <?php if (Session::get("user_account_type") == 7) : ?>
+                            <?php if (Session::get("user_account_type") == 7) :
+                                $editImages = array_values(array_map(
+                                    fn($img) => ['id' => $img->id, 'name' => $img->name],
+                                    array_filter((array)$this->productImages, fn($img) => $img->product_id == $product->id)
+                                ));
+                            ?>
                                 <button type="button"
                                     data-id="<?= htmlspecialchars($product->id) ?>"
                                     data-name="<?= htmlspecialchars($product->name) ?>"
@@ -126,6 +140,7 @@
                                     data-price="<?= htmlspecialchars($product->price) ?>"
                                     data-category-id="<?= htmlspecialchars($product->category_id) ?>"
                                     data-amount="<?= htmlspecialchars($product->inventory_amount ?? 0) ?>"
+                                    data-images="<?= htmlspecialchars(json_encode($editImages), ENT_QUOTES) ?>"
                                     onclick="editProduct(this)">Edit Product</button>
                             <?php endif; ?>
 

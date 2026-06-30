@@ -162,6 +162,26 @@ class ShopModel {
         }
     }
 
+    public static function deleteProductImage(int $imageID, int $productID) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "SELECT name, product_id FROM shop_images WHERE id = :id AND product_id = :product_id LIMIT 1;";
+        $query = $database->prepare($sql);
+        $query->execute([':id' => $imageID, ':product_id' => $productID]);
+        $image = $query->fetch();
+
+        if (!$image) return false;
+
+        $filePath = dirname(dirname(__DIR__)) . '/public/shopImages/' . $image->product_id . '/' . $image->name;
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        $sql = "DELETE FROM shop_images WHERE id = :id LIMIT 1;";
+        $query = $database->prepare($sql);
+        return $query->execute([':id' => $imageID]);
+    }
+
     public static function checkIfProductExists(int $productID) {
         $database = DatabaseFactory::getFactory()->getConnection();
 

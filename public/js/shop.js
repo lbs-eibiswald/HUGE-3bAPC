@@ -16,6 +16,9 @@ function openCreateProduct() {
     form.querySelector('#edit-product-id').value = '';
     form.querySelector('[type="submit"]').textContent = 'Create Product';
 
+    document.getElementById('existing-images-section').style.display = 'none';
+    document.getElementById('existing-images-list').innerHTML = '';
+
     container.style.display = (container.style.display === 'none' || container.style.display === '') ? 'flex' : 'none';
 }
 
@@ -32,7 +35,58 @@ function editProduct(btn) {
     form.querySelector('#edit-product-id').value = btn.dataset.id;
     form.querySelector('[type="submit"]').textContent = 'Save Changes';
 
+    const images = JSON.parse(btn.dataset.images || '[]');
+    renderExistingImages(images, form.dataset.imageBaseUrl, btn.dataset.id, form.dataset.deleteImageUrl);
+
     container.style.display = 'flex';
+}
+
+function renderExistingImages(images, baseUrl, productId, deleteUrl) {
+    const section = document.getElementById('existing-images-section');
+    const list = document.getElementById('existing-images-list');
+    list.innerHTML = '';
+
+    if (!images || images.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    images.forEach(img => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display:inline-flex; flex-direction:column; align-items:center; gap:4px; margin-right:8px;';
+
+        const image = document.createElement('img');
+        image.src = baseUrl + productId + '/' + img.name;
+        image.style.cssText = 'max-width:80px; max-height:60px; object-fit:cover;';
+
+        const form = document.createElement('form');
+        form.action = deleteUrl;
+        form.method = 'post';
+
+        const inputImgId = document.createElement('input');
+        inputImgId.type = 'hidden';
+        inputImgId.name = 'imageID';
+        inputImgId.value = img.id;
+
+        const inputProdId = document.createElement('input');
+        inputProdId.type = 'hidden';
+        inputProdId.name = 'productID';
+        inputProdId.value = productId;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'submit';
+        deleteBtn.textContent = 'Delete';
+
+        form.appendChild(inputImgId);
+        form.appendChild(inputProdId);
+        form.appendChild(deleteBtn);
+
+        item.appendChild(image);
+        item.appendChild(form);
+        list.appendChild(item);
+    });
 }
 
 function toggleView() {
