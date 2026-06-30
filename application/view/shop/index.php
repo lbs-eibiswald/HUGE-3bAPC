@@ -142,6 +142,11 @@
                                     data-amount="<?= htmlspecialchars($product->inventory_amount ?? 0) ?>"
                                     data-images="<?= htmlspecialchars(json_encode($editImages), ENT_QUOTES) ?>"
                                     onclick="editProduct(this)">Edit Product</button>
+
+                                <form action="<?php echo Config::get('URL'); ?>shop/deleteProduct" method="post" style="display:inline;">
+                                    <input type="hidden" name="productID" value="<?= htmlspecialchars($product->id) ?>">
+                                    <button type="submit" onclick="return confirm('Delete this product?')">Delete Product</button>
+                                </form>
                             <?php endif; ?>
 
                             <!-- shop-only: hidden in cart mode via CSS -->

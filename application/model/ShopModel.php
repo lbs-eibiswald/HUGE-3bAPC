@@ -162,6 +162,37 @@ class ShopModel {
         }
     }
 
+    public static function deleteProduct(int $productID) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        // Delete all image files from filesystem
+        $sql = "SELECT name FROM shop_images WHERE product_id = :product_id;";
+        $query = $database->prepare($sql);
+        $query->execute([':product_id' => $productID]);
+        $images = $query->fetchAll();
+
+        foreach ($images as $image) {
+            $filePath = dirname(dirname(__DIR__)) . '/public/shopImages/' . $productID . '/' . $image->name;
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
+        // Delete image directory if empty
+        $dir = dirname(dirname(__DIR__)) . '/public/shopImages/' . $productID;
+        if (is_dir($dir)) {
+            rmdir($dir);
+        }
+
+        // Delete from shop_images, shopping_cart and shop_products
+        $database->prepare("DELETE FROM shop_images WHERE product_id = :id;")->execute([':id' => $productID]);
+        $database->prepare("DELETE FROM shopping_cart WHERE product_id = :id;")->execute([':id' => $productID]);
+
+        $sql = "DELETE FROM shop_products WHERE id = :id LIMIT 1;";
+        $query = $database->prepare($sql);
+        return $query->execute([':id' => $productID]);
+    }
+
     public static function deleteProductImage(int $imageID, int $productID) {
         $database = DatabaseFactory::getFactory()->getConnection();
 
