@@ -9,7 +9,7 @@
             <?php if (Session::get("user_account_type") == 7) : ?>
                 <div id="admin-actions">
                     <button onclick="toggleVisibility('create-category-container')">Create new Category</button>
-                    <button onclick="toggleVisibility('create-product-container')">Create new Product</button>
+                    <button onclick="openCreateProduct()">Create new Product</button>
                 </div>
 
             <!-- CREATE NEW CATEGORY -->
@@ -23,7 +23,10 @@
 
             <!-- CREATE NEW PRODUCT -->
             <div class="create-product" id="create-product-container">
-                <form action="<?php echo Config::get('URL'); ?>shop/createNewProduct" method="post" enctype="multipart/form-data">
+                <form action="<?php echo Config::get('URL'); ?>shop/createNewProduct" method="post" enctype="multipart/form-data"
+                      data-create-url="<?php echo Config::get('URL'); ?>shop/createNewProduct"
+                      data-edit-url="<?php echo Config::get('URL'); ?>shop/updateProduct">
+                    <input type="hidden" name="productID" id="edit-product-id" value="">
                     <br>
                     <label>Product Name:</label>
                     <input type="text" name="productName" placeholder="Enter product name" required>
@@ -114,6 +117,17 @@
                             <p class="product-description"><?php echo $product->description; ?></p>
                             <p class="product-price">Price: <?php echo $product->price; ?></p>
                             <p class="product-category">Category: <?php echo $product->category_name; ?></p>
+
+                            <?php if (Session::get("user_account_type") == 7) : ?>
+                                <button type="button"
+                                    data-id="<?= htmlspecialchars($product->id) ?>"
+                                    data-name="<?= htmlspecialchars($product->name) ?>"
+                                    data-description="<?= htmlspecialchars($product->description) ?>"
+                                    data-price="<?= htmlspecialchars($product->price) ?>"
+                                    data-category-id="<?= htmlspecialchars($product->category_id) ?>"
+                                    data-amount="<?= htmlspecialchars($product->inventory_amount ?? 0) ?>"
+                                    onclick="editProduct(this)">Edit Product</button>
+                            <?php endif; ?>
 
                             <!-- shop-only: hidden in cart mode via CSS -->
                             <div class="shop-only">

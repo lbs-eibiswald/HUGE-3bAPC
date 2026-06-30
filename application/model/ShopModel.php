@@ -75,6 +75,23 @@ class ShopModel {
         return -1;
     }
 
+    public static function updateProductEntry(int $id, string $name, float $price, string $description, int $categoryID, int $amount) {
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "UPDATE shop_products SET name = :name, price = :price, description = :desc, category = :categoryID, inventory_amount = :amount WHERE id = :id LIMIT 1;";
+        $query = $database->prepare($sql);
+        $result = $query->execute(array(
+            ':name' => $name,
+            ':price' => $price,
+            ':desc' => $description,
+            ':categoryID' => $categoryID,
+            ':amount' => $amount,
+            ':id' => $id
+        ));
+
+        return $result;
+    }
+
     /**
      * Verify if the file meets every requirenment
      * @return boolean if the file is allowed to upload or not.

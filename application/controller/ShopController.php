@@ -79,6 +79,44 @@ class ShopController extends Controller {
         Session::add('feedback_positive', 'Product successfully created!');
     }
 
+    public function updateProduct() {
+        if (Session::get("user_account_type") != 7) {
+            Session::add('feedback_negative', 'You don\'t have permissions to edit a product.');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        $productID   = (int) Request::post('productID');
+        $productName = (string) Request::post('productName');
+        $productDescription = (string) Request::post('productDescription');
+        $categoryID  = (int) Request::post('categorySelection');
+        $productInventoryAmount = (int) Request::post('productAmount');
+        $productPrice = (float) str_replace(',', '.', Request::post('productPrice'));
+
+        if (!ShopModel::checkIfProductExists($productID)) {
+            Session::add('feedback_negative', 'Product not found.');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        if (!ShopModel::updateProductEntry($productID, $productName, $productPrice, $productDescription, $categoryID, $productInventoryAmount)) {
+            Session::add('feedback_negative', 'Something went wrong while updating the product.');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        if (!ShopModel::verifyFileUpload()) {
+            Session::add('feedback_negative', 'Something went wrong with one image.');
+            Redirect::to('shop/index');
+            return;
+        }
+
+        ShopModel::uploadImage($productID);
+
+        Session::add('feedback_positive', 'Product successfully updated!');
+        Redirect::to('shop/index');
+    }
+
     public function addToCart() {
         $userID = (int) Session::get('user_id');
         $productID = (int) Request::post('productID');
