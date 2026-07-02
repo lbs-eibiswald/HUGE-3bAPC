@@ -106,7 +106,7 @@ class LoginController extends Controller
      */
     public function requestPasswordReset_action()
     {
-        PasswordResetModel::requestPasswordReset(Request::post('user_name_or_email'), Request::post('captcha'));
+        PasswordResetModel::requestPasswordReset(Request::post('user_name_or_email'), Request::post('g-recaptcha-response'));
         Redirect::to('login/index');
     }
 

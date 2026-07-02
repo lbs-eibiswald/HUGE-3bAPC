@@ -11,13 +11,13 @@ class PasswordResetModel
      * Perform the necessary actions to send a password reset mail
      *
      * @param $user_name_or_email string Username or user's email
-     * @param $captcha string Captcha string
+     * @param $captcha string the "g-recaptcha-response" token submitted by the reCAPTCHA widget
      *
      * @return bool success status
      */
     public static function requestPasswordReset($user_name_or_email, $captcha)
     {
-        if (!CaptchaModel::checkCaptcha($captcha)) {
+        if (!RecaptchaModel::verify($captcha)) {
             Session::add('feedback_negative', Text::get('FEEDBACK_CAPTCHA_WRONG'));
             return false;
         }

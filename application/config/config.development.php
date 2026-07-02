@@ -76,6 +76,14 @@ return array(
     'CAPTCHA_WIDTH' => 359,
     'CAPTCHA_HEIGHT' => 100,
     /**
+     * Configuration for: Google reCAPTCHA
+     * RECAPTCHA_SITE_KEY is public and used in the HTML/JS on the frontend.
+     * RECAPTCHA_SECRET_KEY is private and used server-side to verify the response with Google.
+     * @see https://www.google.com/recaptcha/admin
+     */
+    'RECAPTCHA_SITE_KEY' => '6LcCrEAtAAAAAG1G8NtJ6ImGbY5uFmMrA4Oy278k',
+    'RECAPTCHA_SECRET_KEY' => '6LcCrEAtAAAAAE2Id6g0HobxNHuRDW_jO1Yt2jsz',
+    /**
      * Configuration for: Cookies
      * 1209600 seconds = 2 weeks
      * COOKIE_PATH is the path the cookie is valid on, usually "/" to make it valid on the whole domain.

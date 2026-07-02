@@ -21,9 +21,10 @@ class RegistrationModel
         $user_email_repeat = strip_tags(Request::post('user_email_repeat'));
         $user_password_new = Request::post('user_password_new');
         $user_password_repeat = Request::post('user_password_repeat');
+        $recaptcha_response = Request::post('g-recaptcha-response');
 
         // stop registration flow if registrationInputValidation() returns false (= anything breaks the input check rules)
-        $validation_result = self::registrationInputValidation(null, $user_name, $user_password_new, $user_password_repeat, $user_email, $user_email_repeat);
+        $validation_result = self::registrationInputValidation($recaptcha_response, $user_name, $user_password_new, $user_password_repeat, $user_email, $user_email_repeat);
         if (!$validation_result) {
             return false;
         }
@@ -87,7 +88,7 @@ class RegistrationModel
     /**
      * Validates the registration input
      *
-     * @param $captcha
+     * @param $captcha string the "g-recaptcha-response" token submitted by the reCAPTCHA widget
      * @param $user_name
      * @param $user_password_new
      * @param $user_password_repeat
@@ -101,10 +102,10 @@ class RegistrationModel
         $return = true;
 
         // perform all necessary checks
-        // if (!CaptchaModel::checkCaptcha($captcha)) {
-        //     Session::add('feedback_negative', Text::get('FEEDBACK_CAPTCHA_WRONG'));
-        //     $return = false;
-        // }
+        if (!RecaptchaModel::verify($captcha)) {
+            Session::add('feedback_negative', Text::get('FEEDBACK_CAPTCHA_WRONG'));
+            $return = false;
+        }
 
         // if username, email and password are all correctly validated, but make sure they all run on first sumbit
         if (self::validateUserName($user_name) AND self::validateUserEmail($user_email, $user_email_repeat) AND self::validateUserPassword($user_password_new, $user_password_repeat) AND $return) {
